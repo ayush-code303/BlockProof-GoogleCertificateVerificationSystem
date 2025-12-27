@@ -309,9 +309,8 @@ Response (200 OK):
 
 ---
 
-## 💡 Hackathon Pitch Points
 
-### Why BlockProof Wins Hackathons:
+### Why BlockProof ?
 
 1. **Solves Real Problem**
    - Certificate fraud is a $100M+ market problem
@@ -364,7 +363,6 @@ Response (200 OK):
 ## 📚 Additional Documentation
 
 - **[SECURITY.md](./SECURITY.md)** - Comprehensive security practices and guidelines
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute to this project
 - **[backend/.env.example](./backend/.env.example)** - Environment configuration template
 
 ---
@@ -439,47 +437,6 @@ A:
 
 ---
 
-## 🎤 Demo Script for Hackathons
-
-### 5-Minute Pitch Structure
-
-**1. Introduction (30 seconds)**
-```
-"BlockProof solves certificate fraud using blockchain and AI.
-The problem: Fake certificates are everywhere.
-Our solution: Two-layer verification - blockchain immutability 
-plus AI tampering detection."
-```
-
-**2. Issue Certificate (1 minute)**
-- Navigate to Admin page
-- Fill form with demo data
-- Show blockchain confirmation
-- Copy the Certificate ID
-
-**3. Verify Valid Certificate (1 minute)**
-- Navigate to Verify page
-- Paste Certificate ID
-- Show VERIFIED result with confidence score
-
-**4. Detect Tampering (1.5 minutes)**
-- Change one field in the data
-- Verify again
-- Show SUSPICIOUS result
-- Explain hash mismatch detection
-
-**5. AI Analysis (1 minute)**
-- Upload certificate image
-- Show AI tampering analysis
-- Display confidence scoring
-
-**6. Closing (30 seconds)**
-```
-"This is production-ready, works on free testnets,
-and can verify millions of certificates instantly.
-Thank you!"
-```
-
 ### Key Talking Points
 
 - ✅ **Real Problem**: $100M+ certificate fraud market
@@ -538,15 +495,6 @@ MIT License - See [LICENSE](./LICENSE) for details.
 
 ---
 
-## 👥 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details on:
-- Code style guidelines
-- Development setup
-- Pull request process
-- Areas for contribution
-
----
 
 ## 🙏 Acknowledgments
 
@@ -557,8 +505,4 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for de
 
 ---
 
-**Made with ❤️ for hackathons and certificate verification** 🚀
-
-⭐ Star this repo if you found it helpful!
-
-📧 Questions? Open an issue or reach out to the team.
+**Made with for hackathons and certificate verification** 🚀
