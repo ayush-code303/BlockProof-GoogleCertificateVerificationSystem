@@ -1,4 +1,4 @@
-# BlockProof Quick Start Guide
+# BlockProof - Quick Start Guide
 
 Get BlockProof up and running in minutes!
 
