@@ -1,227 +1,129 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { certificateAPI } from '../utils/api';
+import { motion } from 'framer-motion';
 
 const Admin = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     recipientName: '',
-    issuerName: '',
     course: '',
-    issueDate: new Date().toISOString().split('T')[0],
-    additionalInfo: '',
+    issuer: 'BlockProof Authority',
+    date: new Date().toISOString().split('T')[0]
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await certificateAPI.issueCertificate(formData);
-      
-      if (result.success) {
-        // Navigate to result page with certificate data
-        navigate('/result', {
-          state: {
-            type: 'issue',
-            data: result,
-          },
-        });
-      } else {
-        setError(result.message || 'Failed to issue certificate');
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred while issuing the certificate');
-      console.error('Error issuing certificate:', err);
-    } finally {
-      setLoading(false);
-    }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="min-h-[calc(100vh-200px)] bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-3">
-              <span className="text-google-blue">Issue</span>{' '}
-              <span className="text-google-red">Certificate</span>
+    <div className="min-h-screen pt-32 pb-20 px-6 bg-[#050505]">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        
+        {/* LEFT: The Control Form */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="space-y-8"
+        >
+          <div>
+            <h2 className="text-brand-accent font-mono text-xs tracking-[0.4em] uppercase mb-4 text-gradient">Secure Minting Terminal</h2>
+            <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
+              Issue Digital <br /> Credentials.
             </h1>
-            <p className="text-gray-600">
-              Create and store a verified certificate on the blockchain
-            </p>
           </div>
 
-          {/* Form */}
-          <div className="card">
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800">{error}</p>
-              </div>
-            )}
+          <form className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Recipient Full Name</label>
+              <input 
+                name="recipientName"
+                onChange={handleChange}
+                type="text" 
+                placeholder="Ex: Aryan Sharma"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 transition-all font-medium text-white"
+              />
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Recipient Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Recipient Name *
-                </label>
-                <input
-                  type="text"
-                  name="recipientName"
-                  value={formData.recipientName}
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Certification Title</label>
+              <input 
+                name="course"
+                onChange={handleChange}
+                type="text" 
+                placeholder="Ex: Blockchain Architecture"
+                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 transition-all font-medium text-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Issue Date</label>
+                <input 
+                  name="date"
+                  value={formData.date}
                   onChange={handleChange}
-                  required
-                  className="input-field"
-                  placeholder="Enter recipient's full name"
+                  type="date" 
+                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 text-white"
                 />
               </div>
-
-              {/* Issuer Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Issuer Name/Organization *
-                </label>
-                <input
-                  type="text"
-                  name="issuerName"
-                  value={formData.issuerName}
-                  onChange={handleChange}
-                  required
-                  className="input-field"
-                  placeholder="Enter issuing organization name"
-                />
-              </div>
-
-              {/* Course/Certificate Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Course/Certificate Title *
-                </label>
-                <input
-                  type="text"
-                  name="course"
-                  value={formData.course}
-                  onChange={handleChange}
-                  required
-                  className="input-field"
-                  placeholder="e.g., Web Development Certification"
-                />
-              </div>
-
-              {/* Issue Date */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Issue Date *
-                </label>
-                <input
-                  type="date"
-                  name="issueDate"
-                  value={formData.issueDate}
-                  onChange={handleChange}
-                  required
-                  className="input-field"
-                />
-              </div>
-
-              {/* Additional Information */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Additional Information (Optional)
-                </label>
-                <textarea
-                  name="additionalInfo"
-                  value={formData.additionalInfo}
-                  onChange={handleChange}
-                  rows="4"
-                  className="input-field"
-                  placeholder="Add any additional details about the certificate"
-                />
-              </div>
-
-              {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <svg
-                    className="w-5 h-5 text-google-blue mt-0.5 mr-3"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div className="text-sm text-gray-700">
-                    <p className="font-medium mb-1">How it works:</p>
-                    <ul className="list-disc list-inside space-y-1 text-gray-600">
-                      <li>A unique certificate ID will be generated automatically</li>
-                      <li>Certificate data will be hashed using SHA-256</li>
-                      <li>The hash will be stored on the blockchain</li>
-                      <li>You'll receive the certificate ID for future verification</li>
-                    </ul>
-                  </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Network</label>
+                <div className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-brand-accent font-bold text-sm flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                  Polygon Mainnet
                 </div>
               </div>
+            </div>
 
-              {/* Submit Button */}
-              <div className="flex space-x-4">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary flex-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Issuing Certificate...
-                    </span>
-                  ) : (
-                    'Issue Certificate'
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="btn-secondary"
-                >
-                  Cancel
-                </button>
+            <button className="btn-gradient w-full py-5 text-xl font-black tracking-tighter shadow-2xl">
+              MINT CERTIFICATE ON-CHAIN
+            </button>
+          </form>
+        </motion.div>
+
+        {/* RIGHT: Real-time Live Preview */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="sticky top-40"
+        >
+          <p className="text-center text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-6">Live Preview (Draft)</p>
+          
+          {/* Certificate Preview Card */}
+          <div className="glass-card p-8 aspect-[1.4/1] flex flex-col justify-between relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 to-transparent opacity-50"></div>
+            
+            <div className="relative z-10 flex justify-between items-start">
+              <div className="text-2xl font-black italic">BP.</div>
+              <div className="text-[10px] font-mono text-gray-500">Preview Only</div>
+            </div>
+
+            <div className="relative z-10 text-center">
+              <p className="text-[8px] uppercase tracking-[0.4em] text-brand-accent mb-4">Blockchain Certified</p>
+              <h2 className="text-xs text-gray-400 mb-2 uppercase tracking-widest">This is to certify that</h2>
+              <h1 className="text-3xl font-bold mb-4 min-h-[40px]">
+                {formData.recipientName || 'RECIPIENT NAME'}
+              </h1>
+              <div className="h-[1px] w-24 bg-white/20 mx-auto mb-4"></div>
+              <p className="text-sm font-medium text-gray-300 italic">
+                {formData.course || 'COURSE OR ACHIEVEMENT TITLE'}
+              </p>
+            </div>
+
+            <div className="relative z-10 flex justify-between items-end">
+              <div className="text-[8px] text-gray-600 font-mono">
+                DATE: {formData.date}
               </div>
-            </form>
+              <div className="text-[8px] text-gray-600 font-mono">
+                ISSUER: {formData.issuer}
+              </div>
+            </div>
           </div>
-        </div>
+
+          <div className="mt-6 flex items-center justify-center space-x-2 text-[10px] text-gray-500 italic">
+            <svg className="w-3 h-3 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Certificates are permanently stored using SHA-256 and IPFS.</span>
+          </div>
+        </motion.div>
+
       </div>
     </div>
   );

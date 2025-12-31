@@ -1,21 +1,26 @@
-/** @type {import('tailwindcss').Config} */
-export default {
+// tailwind.config.js ke andar
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './index.html',
+    './src/**/*.{js,jsx,ts,tsx}'
   ],
   theme: {
     extend: {
-      colors: {
-        'google-blue': '#4285f4',
-        'google-red': '#ea4335',
-        'google-yellow': '#fbbc04',
-        'google-green': '#34a853',
+      animation: {
+        'scan-move': 'scan 3s linear infinite',
+        'fade-in': 'fadeIn 0.5s ease-out',
       },
-      fontFamily: {
-        'google': ['Product Sans', 'Arial', 'sans-serif'],
-      },
-    },
+      keyframes: {
+        scan: {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(400px)' }, // Height of your card
+        },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        }
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 }

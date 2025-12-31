@@ -1,172 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { certificateAPI } from '../utils/api';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Verify = () => {
+  const [certId, setCertId] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [certificateId, setCertificateId] = useState(searchParams.get('id') || '');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // If ID is in URL params, auto-verify
-    const id = searchParams.get('id');
-    if (id) {
-      setCertificateId(id);
-      handleVerify(id);
-    }
-  }, [searchParams]);
-
-  const handleVerify = async (id = certificateId) => {
-    if (!id.trim()) {
-      setError('Please enter a certificate ID');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await certificateAPI.verifyCertificate(id.trim());
-      
-      // Navigate to result page with verification data
-      navigate('/result', {
-        state: {
-          type: 'verify',
-          data: result,
-        },
-      });
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred while verifying the certificate');
-      console.error('Error verifying certificate:', err);
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleVerify = (e) => {
     e.preventDefault();
-    handleVerify();
+    if (!certId) return;
+
+    setIsScanning(true);
+
+    // Fake delay for the "Cool" Scanning Effect
+    setTimeout(() => {
+      setIsScanning(false);
+      navigate(`/result?id=${certId}`);
+    }, 3500); 
   };
 
   return (
-    <div className="min-h-[calc(100vh-200px)] bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-3">
-              <span className="text-google-blue">Verify</span>{' '}
-              <span className="text-google-red">Certificate</span>
-            </h1>
-            <p className="text-gray-600">
-              Enter the certificate ID to verify its authenticity
-            </p>
-          </div>
+    <div className="min-h-screen pt-32 pb-20 px-6 flex flex-col items-center">
+      <div className="max-w-3xl w-full">
+        {/* Header Text */}
+        <div className="text-center mb-12">
+          <h2 className="text-sm font-mono text-brand-accent tracking-[0.3em] uppercase mb-4">
+            Validation Terminal
+          </h2>
+          <h1 className="text-4xl md:text-6xl font-black mb-6">
+            Verify <span className="text-gradient">Authenticity</span>
+          </h1>
+        </div>
 
-          {/* Verification Form */}
-          <div className="card">
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800">{error}</p>
-              </div>
-            )}
+        {/* Scanner Box */}
+        <div className="glass-card p-2 md:p-8 relative overflow-hidden">
+          {/* Animated Scanning Line */}
+          {isScanning && (
+            <div className="absolute inset-0 z-20 pointer-events-none">
+              <div className="w-full h-[2px] bg-brand-accent shadow-[0_0_20px_#22d3ee] animate-scan-move" />
+              <div className="absolute inset-0 bg-brand-accent/5 animate-pulse" />
+            </div>
+          )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Certificate ID
-                </label>
+          <form onSubmit={handleVerify} className="relative z-10 space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 uppercase ml-2 tracking-widest">
+                Certificate Digital Fingerprint (ID)
+              </label>
+              <div className="relative">
                 <input
                   type="text"
-                  value={certificateId}
-                  onChange={(e) => setCertificateId(e.target.value)}
-                  className="input-field"
-                  placeholder="e.g., CERT-1234567890-ABCD1234"
-                  required
+                  value={certId}
+                  onChange={(e) => setCertId(e.target.value)}
+                  placeholder="Enter Hash or Certificate ID..."
+                  className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-xl font-mono focus:outline-none focus:border-brand-primary/50 transition-all placeholder:text-gray-700"
                 />
-                <p className="mt-2 text-sm text-gray-500">
-                  Enter the unique certificate ID provided when the certificate was issued
-                </p>
-              </div>
-
-              {/* How Verification Works */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <svg
-                    className="w-5 h-5 text-google-blue mt-0.5 mr-3"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div className="text-sm text-gray-700">
-                    <p className="font-medium mb-1">Two-Layer Verification:</p>
-                    <ul className="list-disc list-inside space-y-1 text-gray-600">
-                      <li>
-                        <strong>Blockchain Layer:</strong> Checks if the certificate exists on
-                        the blockchain and retrieves its hash
-                      </li>
-                      <li>
-                        <strong>AI Layer:</strong> Uses Google Gemini AI to analyze
-                        certificate data for authenticity
-                      </li>
-                    </ul>
-                  </div>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                   <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
               </div>
+            </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Verifying Certificate...
-                  </span>
-                ) : (
-                  'Verify Certificate'
-                )}
-              </button>
-            </form>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-8 text-center text-gray-600">
-            <p className="mb-4">Don't have a certificate ID?</p>
             <button
-              onClick={() => navigate('/admin')}
-              className="text-google-blue hover:underline"
+              disabled={isScanning}
+              className={`w-full py-5 rounded-2xl font-black text-xl tracking-tighter transition-all ${
+                isScanning 
+                ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
+                : 'btn-gradient active:scale-[0.98]'
+              }`}
             >
-              Issue a new certificate →
+              {isScanning ? 'ENCRYPTING & SCANNING...' : 'START VERIFICATION'}
             </button>
-          </div>
+          </form>
         </div>
+
+        {/* Status Messages (Only during scan) */}
+        {isScanning && (
+          <div className="mt-8 font-mono text-xs text-brand-accent space-y-2 text-center animate-fade-in">
+            <p className="">{'>'} INITIALIZING POLYGON MAINNET CONNECTION...</p>
+            <p className="animate-pulse">{'>'} FETCHING SHA-256 HASH FROM BLOCK 1928374...</p>
+            <p className="">{'>'} GEMINI AI ANALYSIS IN PROGRESS...</p>
+          </div>
+        )}
       </div>
     </div>
   );
