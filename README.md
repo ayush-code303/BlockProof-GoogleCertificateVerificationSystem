@@ -5,7 +5,7 @@
 ![Blockchain](https://img.shields.io/badge/Blockchain-Polygon%20Mumbai-purple)
 ![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange)
 
-## 🎯 Project Overview
+## 🎯 Project-Overview
 
 **BlockProof** is a revolutionary, **hackathon-ready** certificate verification system that combines **blockchain technology** with **artificial intelligence** to ensure certificate authenticity and detect tampering in real-time.
 
