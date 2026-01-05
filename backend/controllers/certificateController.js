@@ -2,41 +2,62 @@ const blockchain = require("../utils/blockchain");
 const gemini = require("../utils/gemini");
 const { generateHash } = require("../utils/hash");
 
+// 1. Issue Certificate
 exports.issueCertificate = async (req, res) => {
-  const { recipientName, course, issuerName } = req.body;
-  const certId = `BP-${Date.now()}`;
-  const certHash = generateHash({ recipientName, course, certId });
-
-  // 1. Store on Real Blockchain
-  const chainResult = await blockchain.storeOnChain(
-    certId,
-    certHash,
-    issuerName,
-    recipientName
-  );
-
-  res.json({ success: true, certificateId: certId, blockchain: chainResult });
+  try {
+    const { recipientName, course, issuerName } = req.body;
+    const certId = `BP-${Date.now()}`;
+    const certHash = generateHash({ recipientName, course, certId });
+    const tx = await blockchain.storeOnChain(
+      certId,
+      certHash,
+      issuerName,
+      recipientName
+    );
+    res
+      .status(201)
+      .json({
+        success: true,
+        certificateId: certId,
+        transactionHash: tx.txHash,
+      });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+// 2. Verify Certificate
 exports.verifyCertificate = async (req, res) => {
-  const { certificateId, certificateData } = req.body;
+  try {
+    const { certificateId } = req.body;
+    const onChain = await blockchain.verifyOnChain(certificateId);
+    if (!onChain.exists)
+      return res.json({ verdict: "TAMPERING_DETECTED", trustScore: 0 });
+    const aiAnalysis = await gemini.verifyCertificateContent(null, onChain);
+    res.json({
+      success: true,
+      verdict: aiAnalysis.isAuthentic ? "VERIFIED" : "SUSPICIOUS",
+      trustScore: aiAnalysis.confidence,
+      blockchain: { exists: true, hash: onChain.hash },
+      ai: { analysis: aiAnalysis.reason },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "System failure" });
+  }
+};
 
-  // 1. Real Blockchain Check
-  const onChainData = await blockchain.verifyOnChain(certificateId);
+// 3. Get Certificate (Ye missing tha shayad)
+exports.getCertificate = async (req, res) => {
+  try {
+    const { certificateId } = req.params;
+    const data = await blockchain.verifyOnChain(certificateId);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-  // 2. Real AI Analysis
-  const aiResult = await gemini.verifyCertificateContent(null, certificateData);
-
-  let verdict = "VERIFIED";
-  if (!onChainData.exists) verdict = "TAMPERING_DETECTED";
-  else if (aiResult.confidence < 60) verdict = "SUSPICIOUS";
-
-  res.json({
-    success: true,
-    certificateId,
-    verdict,
-    trustScore: aiResult.confidence,
-    blockchain: { exists: onChainData.exists, status: "ON_CHAIN" },
-    ai: { confidence: aiResult.confidence, analysis: aiResult.reason },
-  });
+// 4. Revoke Certificate
+exports.revokeCertificate = async (req, res) => {
+  res.json({ success: true, message: "Revoke logic to be implemented" });
 };
