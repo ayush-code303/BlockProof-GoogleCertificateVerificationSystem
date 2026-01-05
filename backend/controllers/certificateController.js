@@ -1,114 +1,42 @@
+const blockchain = require("../utils/blockchain");
+const gemini = require("../utils/gemini");
 const { generateHash } = require("../utils/hash");
-const blockchainService = require("../utils/blockchain");
-const geminiService = require("../utils/gemini");
-const crypto = require("crypto");
 
-// 1. Issue Certificate Function
-const issueCertificate = async (req, res) => {
-  try {
-    const { recipientName, issuerName, course } = req.body;
+exports.issueCertificate = async (req, res) => {
+  const { recipientName, course, issuerName } = req.body;
+  const certId = `BP-${Date.now()}`;
+  const certHash = generateHash({ recipientName, course, certId });
 
-    const timestamp = Date.now();
-    const randomSuffix = crypto.randomBytes(4).toString("hex").toUpperCase();
-    const certificateId = `CERT-${timestamp}-${randomSuffix}`;
+  // 1. Store on Real Blockchain
+  const chainResult = await blockchain.storeOnChain(
+    certId,
+    certHash,
+    issuerName,
+    recipientName
+  );
 
-    const certificateData = {
-      certificateId,
-      recipientName: recipientName.trim(),
-      issuerName: issuerName || "BlockProof Authority",
-      course: course.trim(),
-      issuedAt: new Date().toISOString(),
-    };
-
-    const certificateHash = generateHash(certificateData);
-
-    // Blockchain storage simulation/real
-    const blockchainResult = await blockchainService.verifyCertificate(
-      certificateId
-    );
-
-    res.status(201).json({
-      success: true,
-      message: "Certificate issued successfully",
-      certificate: { ...certificateData, hash: certificateHash },
-      blockchain: blockchainResult,
-    });
-  } catch (error) {
-    console.error("Issuance Error:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to issue certificate" });
-  }
+  res.json({ success: true, certificateId: certId, blockchain: chainResult });
 };
 
-// 2. Verify Certificate Function (The one causing error)
-const verifyCertificate = async (req, res) => {
-  try {
-    const { certificateId } = req.body;
+exports.verifyCertificate = async (req, res) => {
+  const { certificateId, certificateData } = req.body;
 
-    if (!certificateId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "ID is required" });
-    }
+  // 1. Real Blockchain Check
+  const onChainData = await blockchain.verifyOnChain(certificateId);
 
-    // Dynamic Result Logic
-    let trustScore = 95;
-    let verdict = "VERIFIED";
+  // 2. Real AI Analysis
+  const aiResult = await gemini.verifyCertificateContent(null, certificateData);
 
-    if (certificateId.toUpperCase().includes("FAKE")) {
-      trustScore = 15;
-      verdict = "TAMPERING_DETECTED";
-    } else if (certificateId.length < 5) {
-      trustScore = 45;
-      verdict = "SUSPICIOUS";
-    }
+  let verdict = "VERIFIED";
+  if (!onChainData.exists) verdict = "TAMPERING_DETECTED";
+  else if (aiResult.confidence < 60) verdict = "SUSPICIOUS";
 
-    res.json({
-      success: true,
-      certificateId,
-      trustScore,
-      verdict,
-      blockchain: {
-        exists: verdict !== "TAMPERING_DETECTED",
-        hash: "0x" + crypto.randomBytes(20).toString("hex"),
-      },
-      ai: {
-        confidence: trustScore - Math.floor(Math.random() * 5),
-        analysis: "Multi-layered forensic analysis complete.",
-      },
-    });
-  } catch (error) {
-    console.error("Verification Error:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
-
-// 3. Get Certificate Details
-const getCertificate = async (req, res) => {
-  try {
-    const result = await blockchainService.getCertificate(
-      req.params.certificateId
-    );
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-
-// 4. Revoke Certificate
-const revokeCertificate = async (req, res) => {
-  try {
-    res.json({ success: true, message: "Certificate Revoked" });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
-
-// IMPORTANT: Exports must match the names used in routes
-module.exports = {
-  issueCertificate,
-  verifyCertificate,
-  getCertificate,
-  revokeCertificate,
+  res.json({
+    success: true,
+    certificateId,
+    verdict,
+    trustScore: aiResult.confidence,
+    blockchain: { exists: onChainData.exists, status: "ON_CHAIN" },
+    ai: { confidence: aiResult.confidence, analysis: aiResult.reason },
+  });
 };
