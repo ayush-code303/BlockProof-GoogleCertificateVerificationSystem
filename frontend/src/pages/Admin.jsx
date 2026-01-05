@@ -1,129 +1,57 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { Terminal, ShieldCheck } from 'lucide-react';
+import axios from 'axios';
 
 const Admin = () => {
-  const [formData, setFormData] = useState({
-    recipientName: '',
-    course: '',
-    issuer: 'BlockProof Authority',
-    date: new Date().toISOString().split('T')[0]
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginData, setLoginData] = useState({ id: '', password: '' });
+  const [formData, setFormData] = useState({ recipientName: '', course: '' });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginData.id === 'admin' && loginData.password === 'root123') setIsLoggedIn(true);
+    else alert(">>> ACCESS_DENIED");
   };
 
-  return (
-    <div className="min-h-screen pt-32 pb-20 px-6 bg-[#050505]">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        
-        {/* LEFT: The Control Form */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="space-y-8"
-        >
-          <div>
-            <h2 className="text-brand-accent font-mono text-xs tracking-[0.4em] uppercase mb-4 text-gradient">Secure Minting Terminal</h2>
-            <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
-              Issue Digital <br /> Credentials.
-            </h1>
-          </div>
+  const handleMint = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/api/certificates/issue', formData);
+      alert("MINT_SUCCESS");
+    } catch (err) { alert("MINT_FAILED"); }
+  };
 
-          <form className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Recipient Full Name</label>
-              <input 
-                name="recipientName"
-                onChange={handleChange}
-                type="text" 
-                placeholder="Ex: Aryan Sharma"
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 transition-all font-medium text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Certification Title</label>
-              <input 
-                name="course"
-                onChange={handleChange}
-                type="text" 
-                placeholder="Ex: Blockchain Architecture"
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 transition-all font-medium text-white"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Issue Date</label>
-                <input 
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  type="date" 
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-brand-primary/50 text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Network</label>
-                <div className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-brand-accent font-bold text-sm flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                  Polygon Mainnet
-                </div>
-              </div>
-            </div>
-
-            <button className="btn-gradient w-full py-5 text-xl font-black tracking-tighter shadow-2xl">
-              MINT CERTIFICATE ON-CHAIN
-            </button>
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="bg-black/80 border-l-2 border-t border-hacker-vivid p-8 w-full max-w-sm shadow-[0_0_50px_rgba(220,38,38,0.2)]">
+          <h2 className="text-xl font-black text-white mb-8 tracking-widest italic neon-text-red">AUTHORIZE.exe</h2>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <input type="text" placeholder="TERMINAL_ID" className="w-full bg-transparent border-b border-hacker-crimson p-3 text-hacker-vivid outline-none focus:border-white transition-all" onChange={(e) => setLoginData({...loginData, id: e.target.value})} />
+            <input type="password" placeholder="ACCESS_KEY" className="w-full bg-transparent border-b border-hacker-crimson p-3 text-hacker-vivid outline-none focus:border-white transition-all" onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
+            <button className="w-full border border-hacker-vivid bg-hacker-vivid/10 py-4 text-xs font-black uppercase tracking-[0.4em] hover:bg-hacker-vivid hover:text-white transition-all">Execute_Auth</button>
           </form>
-        </motion.div>
+        </div>
+      </div>
+    );
+  }
 
-        {/* RIGHT: Real-time Live Preview */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="sticky top-40"
-        >
-          <p className="text-center text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-6">Live Preview (Draft)</p>
-          
-          {/* Certificate Preview Card */}
-          <div className="glass-card p-8 aspect-[1.4/1] flex flex-col justify-between relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 to-transparent opacity-50"></div>
-            
-            <div className="relative z-10 flex justify-between items-start">
-              <div className="text-2xl font-black italic">BP.</div>
-              <div className="text-[10px] font-mono text-gray-500">Preview Only</div>
-            </div>
-
-            <div className="relative z-10 text-center">
-              <p className="text-[8px] uppercase tracking-[0.4em] text-brand-accent mb-4">Blockchain Certified</p>
-              <h2 className="text-xs text-gray-400 mb-2 uppercase tracking-widest">This is to certify that</h2>
-              <h1 className="text-3xl font-bold mb-4 min-h-[40px]">
-                {formData.recipientName || 'RECIPIENT NAME'}
-              </h1>
-              <div className="h-[1px] w-24 bg-white/20 mx-auto mb-4"></div>
-              <p className="text-sm font-medium text-gray-300 italic">
-                {formData.course || 'COURSE OR ACHIEVEMENT TITLE'}
-              </p>
-            </div>
-
-            <div className="relative z-10 flex justify-between items-end">
-              <div className="text-[8px] text-gray-600 font-mono">
-                DATE: {formData.date}
-              </div>
-              <div className="text-[8px] text-gray-600 font-mono">
-                ISSUER: {formData.issuer}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-center space-x-2 text-[10px] text-gray-500 italic">
-            <svg className="w-3 h-3 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span>Certificates are permanently stored using SHA-256 and IPFS.</span>
-          </div>
-        </motion.div>
-
+  return (
+    <div className="min-h-screen pt-24 pb-10 px-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1 bg-black/60 border border-hacker-crimson/30 p-8">
+          <p className="text-[10px] text-hacker-vivid mb-6 font-black underline tracking-[0.5em]">MINTING_PARAMETERS</p>
+          <form onSubmit={handleMint} className="space-y-8">
+             <input onChange={(e) => setFormData({...formData, recipientName: e.target.value})} type="text" placeholder="RECIPIENT_NAME" className="w-full bg-transparent border-b border-hacker-crimson/50 p-3 outline-none focus:border-hacker-vivid text-white" />
+             <input onChange={(e) => setFormData({...formData, course: e.target.value})} type="text" placeholder="COURSE_TITLE" className="w-full bg-transparent border-b border-hacker-crimson/50 p-3 outline-none focus:border-hacker-vivid text-white" />
+             <button className="w-full border border-hacker-crimson bg-hacker-crimson/10 py-5 font-black uppercase tracking-widest text-hacker-vivid hover:bg-hacker-vivid hover:text-white transition-all">Initialize_Mint</button>
+          </form>
+        </div>
+        <div className="lg:col-span-2 bg-black border border-hacker-vivid/20 p-12 text-center relative overflow-hidden italic">
+           <div className="absolute top-0 right-0 p-4 text-[9px] text-hacker-vivid animate-pulse">● SYNCING_CHAIN</div>
+           <h1 className="text-6xl font-black text-white mb-4 underline decoration-hacker-vivid/40">{formData.recipientName || "ID_NAME"}</h1>
+           <p className="text-hacker-vivid font-black tracking-[0.5em] text-sm">{formData.course || "MODULE_ID"}</p>
+        </div>
       </div>
     </div>
   );

@@ -1,30 +1,16 @@
 import { motion } from 'framer-motion';
 
 const Scanner = () => (
-  <div className="relative w-72 h-48 border border-blue-500/20 rounded-xl overflow-hidden bg-blue-500/5 backdrop-blur-sm">
-    
-    {/* Moving Laser Line */}
+  <div className="relative w-full max-w-md h-64 border-2 border-hacker-crimson/30 bg-black/90 overflow-hidden">
+    <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#dc2626_1px,transparent_1px),linear-gradient(to_bottom,#dc2626_1px,transparent_1px)] bg-[size:15px_15px]" />
     <motion.div 
-      animate={{ top: ['0%', '100%', '0%'] }}
-      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-      className="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_rgba(34,211,238,0.8)] z-10"
+      animate={{ top: ['0%', '100%', '0%'] }} 
+      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+      className="absolute left-0 w-full h-[2px] bg-hacker-vivid shadow-[0_0_20px_#ff0000] z-20"
     />
-
-    {/* Grid */}
-    <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]" />
-
-    <div className="flex flex-col items-center justify-center h-full space-y-2">
-      <div className="text-cyan-400 text-[10px] font-mono animate-pulse tracking-[0.2em]">
-        AI FORENSIC ANALYSIS IN PROGRESS
-      </div>
-
-      <div className="w-32 h-1 bg-gray-800 rounded-full overflow-hidden">
-        <motion.div 
-          animate={{ x: [-128, 128] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full h-full bg-cyan-500"
-        />
-      </div>
+    <div className="flex flex-col items-center justify-center h-full space-y-4">
+      <div className="text-hacker-vivid text-xs font-black animate-pulse tracking-[0.5em]">AI_FORENSICS_RUNNING</div>
+      <div className="text-[9px] text-gray-600 uppercase tracking-widest">Hash_Verification_In_Progress...</div>
     </div>
   </div>
 );

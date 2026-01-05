@@ -3,24 +3,21 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 px-4">
-      <header className="max-w-4xl mx-auto glass-card px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity">
-          B<span className="text-brand-primary">P</span>.
+    <header className="fixed top-0 left-0 w-full z-50 bg-black/90 border-b border-hacker-crimson/30 backdrop-blur-md font-mono">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <Link to="/" className="text-xl font-black tracking-tighter text-white uppercase italic">
+          <span className="text-hacker-vivid">RED_</span>PROTOCOL<span className="text-hacker-crimson">_v4</span>
         </Link>
-        
-        <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
-          <Link to="/" className="hover:text-brand-accent transition-colors">Home</Link>
-          <Link to="/verify" className="hover:text-brand-accent transition-colors">Verify</Link>
-          <Link to="/admin" className="hover:text-brand-accent transition-colors">Admin</Link>
-          <Link to="/about" className="hover:text-brand-accent transition-colors">About</Link>
+        <nav className="flex gap-8 text-[11px] font-bold tracking-[.3em] uppercase text-gray-500">
+          <Link to="/" className="hover:text-hacker-vivid hover:drop-shadow-[0_0_5px_#ff0000] transition-all">Dash</Link>
+          <Link to="/verify" className="hover:text-hacker-vivid hover:drop-shadow-[0_0_5px_#ff0000] transition-all">Verify_Scan</Link>
+          <Link to="/admin" className="hover:text-hacker-vivid hover:drop-shadow-[0_0_5px_#ff0000] transition-all text-hacker-crimson">Admin_Node</Link>
         </nav>
-        
-        <button className="bg-white text-black px-5 py-2 rounded-full text-xs font-bold hover:bg-brand-accent transition-all">
-          Connect Wallet
-        </button>
-      </header>
-    </div>
+        <div className="text-[9px] text-hacker-vivid animate-pulse font-black tracking-widest border border-hacker-crimson/50 px-2 py-1 bg-hacker-crimson/5">
+          ● SYSTEM_ENCRYPTED
+        </div>
+      </div>
+    </header>
   );
 };
 
