@@ -1,27 +1,131 @@
 import React from 'react';
 
+
+
 const Footer = () => {
+
   return (
-    <footer className="bg-brand-black border-t border-brand-cobalt/10 mt-auto">
+
+    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
+
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <h3 className="font-black text-brand-cobalt mb-1 italic">BLOCKPROOF_CORE</h3>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-              L2 Certification Protocol v1.0.4
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          {/* About */}
+
+          <div>
+
+            <h3 className="font-semibold text-gray-900 mb-3">BlockProof</h3>
+
+            <p className="text-sm text-gray-600">
+
+              Secure certificate verification system using blockchain technology and AI.
+
             </p>
+
           </div>
-          <div className="flex gap-4">
-             <span className="px-3 py-1 bg-brand-cobalt/10 border border-brand-cobalt/20 rounded-md text-[9px] text-brand-glow font-mono uppercase">Status: Online</span>
-             <span className="px-3 py-1 bg-brand-electric/10 border border-brand-electric/20 rounded-md text-[9px] text-brand-electric font-mono uppercase">AI: Active</span>
+
+
+
+          {/* Links */}
+
+          <div>
+
+            <h3 className="font-semibold text-gray-900 mb-3">Quick Links</h3>
+
+            <ul className="space-y-2 text-sm text-gray-600">
+
+              <li>
+
+                <a href="/about" className="hover:text-google-blue">
+
+                  About Us
+
+                </a>
+
+              </li>
+
+              <li>
+
+                <a href="/verify" className="hover:text-google-blue">
+
+                  Verify Certificate
+
+                </a>
+
+              </li>
+
+              <li>
+
+                <a href="/admin" className="hover:text-google-blue">
+
+                  Issue Certificate
+
+                </a>
+
+              </li>
+
+            </ul>
+
           </div>
-          <div className="text-[10px] text-gray-600 font-mono">
-            &copy; {new Date().getFullYear()} TERMINAL_ACCESS. NO RIGHTS RESERVED.
+
+
+
+          {/* Technology */}
+
+          <div>
+
+            <h3 className="font-semibold text-gray-900 mb-3">Technology</h3>
+
+            <div className="flex flex-wrap gap-2">
+
+              <span className="px-3 py-1 bg-gray-200 rounded-full text-xs text-gray-700">
+
+                Blockchain
+
+              </span>
+
+              <span className="px-3 py-1 bg-gray-200 rounded-full text-xs text-gray-700">
+
+                AI Verification
+
+              </span>
+
+              <span className="px-3 py-1 bg-gray-200 rounded-full text-xs text-gray-700">
+
+                Ethereum
+
+              </span>
+
+              <span className="px-3 py-1 bg-gray-200 rounded-full text-xs text-gray-700">
+
+                Google Gemini
+
+              </span>
+
+            </div>
+
           </div>
+
         </div>
+
+
+
+        <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
+
+          <p>&copy; {new Date().getFullYear()} BlockProof. All rights reserved.</p>
+
+        </div>
+
       </div>
+
     </footer>
+
   );
+
 };
+
+
 
 export default Footer;
